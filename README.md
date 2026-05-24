@@ -4,11 +4,11 @@ Website platform praktikum basis data yang dikembangkan oleh Inti Praktikum Basi
 
 Platform ini bertujuan untuk menguji kemampuan mahasiswa dalam menulis query SQL melalui soal-soal interaktif yang dilengkapi dengan sistem penilaian otomatis dan leaderboard real-time.
 
-##  Tim Pengembang Inti Praktikum Basis Data 2026
-[Najwa Tahir](https://github.com/username1)
-[Elika Putri Wicaksana](https://github.com/username1)
-[I Made Sandika Wijaya](https://github.com/username1)
-[Anand Hari Krsna](https://github.com/username1)
+##  Tim Pengembang: Inti Praktikum Basis Data 2026
+[Najwa Tahir](https://github.com/najwatahir)
+[Elika Putri Wicaksana](https://github.com/elikawicaksana)
+[I Made Sandika Wijaya](https://github.com/Sandss225)
+[Anand Hari Krsna](https://github.com/sena-mashira)
 
 
 ## Tech Stack
@@ -81,5 +81,8 @@ app/
     ├── SqlSandboxService.php
     ├── SqlValidatorService.php
 ```
+
+### Notes
+Gunakan /login untuk masuk sebagai admin.
 
 <p align="center">Praktikum Basis Data 2026 · Teknologi Informasi Universitas Udayana</p>
