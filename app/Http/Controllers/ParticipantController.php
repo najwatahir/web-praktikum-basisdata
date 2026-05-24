@@ -82,4 +82,10 @@ class ParticipantController extends Controller
 
         return view('participant.solve', compact('question', 'lastSubmission'));
     }
+
+    public function logout()
+{
+    session()->forget(['nim', 'nama', 'kelompok']);
+    return redirect()->route('home');
+}
 }

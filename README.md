@@ -1,8 +1,15 @@
-# Web Praktikum Basis Data TI Udayana
+# Web Praktikum Basis Data TI Udayana 2026
 
 Website platform praktikum basis data yang dikembangkan oleh Inti Praktikum Basis Data 2026, Teknologi Informasi Universitas Udayana.
 
 Platform ini bertujuan untuk menguji kemampuan mahasiswa dalam menulis query SQL melalui soal-soal interaktif yang dilengkapi dengan sistem penilaian otomatis dan leaderboard real-time.
+
+##  Tim Pengembang Inti Praktikum Basis Data 2026
+[Najwa Tahir](https://github.com/username1)
+[Elika Putri Wicaksana](https://github.com/username1)
+[I Made Sandika Wijaya](https://github.com/username1)
+[Anand Hari Krsna](https://github.com/username1)
+
 
 ## Tech Stack
 

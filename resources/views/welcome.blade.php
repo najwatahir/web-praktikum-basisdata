@@ -33,7 +33,7 @@
                     </div>
                 @endif
 
-                {{-- <form method="POST" action="{{ route('participant.join') }}"> --}}
+                <form method="POST" action="{{ route('participant.join') }}">
                     @csrf
 
                     <div class="mb-4">

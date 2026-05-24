@@ -74,29 +74,44 @@ class SqlSandboxService
     }
 
     private function addPrefix(string $sql): string
-    {
-        return preg_replace_callback(
-            '/\b(CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?)`?(\w+)`?/i',
-            fn($m) => $m[1] . $this->prefix . $m[2],
-            $sql
+{
+    // Prefix CREATE TABLE
+    $sql = preg_replace_callback(
+        '/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(\w+)`?/i',
+        fn($m) => str_ireplace($m[1], $this->prefix . $m[1], $m[0]),
+        $sql
+    );
+
+    // Prefix INSERT INTO
+    $sql = preg_replace_callback(
+        '/INSERT\s+INTO\s+`?(\w+)`?/i',
+        fn($m) => str_ireplace($m[1], $this->prefix . $m[1], $m[0]),
+        $sql
+    );
+
+    return $sql;
+}
+
+private function addPrefixToQuery(string $userQuery, string $schemaSql): string
+{
+    // Ambil semua nama tabel dari schema
+    preg_match_all(
+        '/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(\w+)`?/i',
+        $schemaSql,
+        $matches
+    );
+    $tables = $matches[1] ?? [];
+
+    foreach ($tables as $table) {
+        $userQuery = preg_replace(
+            '/\b' . preg_quote($table, '/') . '\b/',
+            $this->prefix . $table,
+            $userQuery
         );
     }
 
-    private function addPrefixToQuery(string $userQuery, string $schemaSql): string
-    {
-        preg_match_all('/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(\w+)`?/i', $schemaSql, $matches);
-        $tables = $matches[1] ?? [];
-
-        foreach ($tables as $table) {
-            $userQuery = preg_replace(
-                '/\b' . preg_quote($table, '/') . '\b/',
-                $this->prefix . $table,
-                $userQuery
-            );
-        }
-
-        return $userQuery;
-    }
+    return $userQuery;
+}
 
     private function cleanup(string $schemaSql): void
     {

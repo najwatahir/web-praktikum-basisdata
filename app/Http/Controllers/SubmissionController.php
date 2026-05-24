@@ -11,11 +11,41 @@ use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
+    // ── TEST: jalankan query tapi tidak simpan skor ──
+    public function test(Request $request)
+    {
+        if (!session('nim')) {
+            return response()->json(['status' => 'error', 'message' => 'Session habis.'], 401);
+        }
+
+        $request->validate([
+            'question_id' => 'required|exists:questions,id',
+            'query'       => 'required|string|max:5000',
+        ]);
+
+        $question = Question::findOrFail($request->question_id);
+        $sandbox  = new SqlSandboxService();
+        $result   = $sandbox->run($question->schema_sql, $request->input('query'));
+
+        if ($result['status'] === 'error') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $result['message'],
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Query berhasil dijalankan. Cek hasilnya sebelum submit.',
+            'result'  => $result['data'],
+        ]);
+    }
+
+    // ── SUBMIT: jalankan query dan simpan skor ──
     public function submit(Request $request)
     {
-        // Cek session
         if (!session('nim')) {
-            return response()->json(['status' => 'error', 'message' => 'Session habis, silakan login ulang.'], 401);
+            return response()->json(['status' => 'error', 'message' => 'Session habis.'], 401);
         }
 
         $request->validate([
@@ -26,22 +56,27 @@ class SubmissionController extends Controller
         $nim      = session('nim');
         $question = Question::findOrFail($request->question_id);
 
-        // Hitung attempt ke berapa
+        // Cek apakah sudah pernah dapat 100
+        $alreadyPerfect = Submission::where('nim', $nim)
+            ->where('question_id', $question->id)
+            ->where('score', $question->poin)
+            ->exists();
+
+        // Hitung attempt
         $attempt = Submission::where('nim', $nim)
             ->where('question_id', $question->id)
             ->count() + 1;
 
-        // Jalankan query di sandbox
+        // Jalankan di sandbox
         $sandbox = new SqlSandboxService();
-        $result  = $sandbox->run($question->schema_sql, $request->query);
+        $result  = $sandbox->run($question->schema_sql, $request->input('query'));
 
-        // Kalau error syntax
+        // Error syntax
         if ($result['status'] === 'error') {
-            // Simpan submission yang error
             Submission::create([
                 'nim'         => $nim,
                 'question_id' => $question->id,
-                'query'       => $request->query,
+                'query'       => $request->input('query'),
                 'is_correct'  => false,
                 'score'       => 0,
                 'attempt'     => $attempt,
@@ -54,34 +89,25 @@ class SubmissionController extends Controller
             ]);
         }
 
-        // Validasi hasil
+        // Hitung skor
         $validator = new SqlValidatorService();
-        $isCorrect = $validator->validate(
+        $score     = $validator->score(
             $result['data'],
             $question->expected_output,
             $question->order_matters
         );
 
-        $feedback = null;
-        $score    = 0;
+        $isCorrect = $score === 100;
+        $finalScore = $alreadyPerfect ? 0 : $score;
+        $feedback   = null;
 
-        if ($isCorrect) {
-            // Cek apakah sudah pernah benar sebelumnya
-            $alreadySolved = Submission::where('nim', $nim)
-                ->where('question_id', $question->id)
-                ->where('is_correct', true)
-                ->exists();
-
-            // Skor hanya dihitung sekali
-            $score = $alreadySolved ? 0 : $question->poin;
-
-        } else {
-            // Panggil Gemini untuk feedback
+        // Kalau tidak sempurna, minta hint dari Gemini
+        if (!$isCorrect) {
             try {
                 $gemini   = new GeminiService();
                 $feedback = $gemini->getFeedback(
                     $question->deskripsi,
-                    $request->query
+                    $request->input('query')
                 );
             } catch (\Exception $e) {
                 $feedback = 'Coba periksa kembali query kamu.';
@@ -92,19 +118,25 @@ class SubmissionController extends Controller
         Submission::create([
             'nim'         => $nim,
             'question_id' => $question->id,
-            'query'       => $request->query,
+            'query'       => $request->input('query'),
             'is_correct'  => $isCorrect,
-            'score'       => $score,
+            'score'       => $finalScore,
             'attempt'     => $attempt,
             'feedback'    => $feedback,
         ]);
 
         return response()->json([
-            'status'   => $isCorrect ? 'correct' : 'wrong',
-            'message'  => $isCorrect ? 'Jawaban benar! 🎉' : 'Jawaban belum tepat.',
-            'score'    => $score,
-            'feedback' => $feedback,
-            'result'   => $result['data'],
-        ]);
+    'status'   => $isCorrect ? 'correct' : ($score > 0 ? 'partial' : 'wrong'),
+    'score'    => $finalScore,
+    'message'  => $isCorrect
+        ? ($alreadyPerfect
+            ? 'Jawaban benar! Tapi kamu sudah pernah mendapat nilai penuh untuk soal ini.'
+            : 'Jawaban benar!')
+        : ($score > 0
+            ? "Jawaban sebagian benar. Kamu mendapat {$finalScore} poin."
+            : 'Jawaban belum tepat.'),
+    'feedback' => $feedback,
+    'result'   => $result['data'],
+]);
     }
 }
