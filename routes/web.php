@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\LeaderboardController;
+use Illuminate\Support\Facades\Route;
 
 // ── PESERTA ──
 Route::get('/', [ParticipantController::class, 'index'])->name('home');
