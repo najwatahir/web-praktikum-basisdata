@@ -1,105 +1,148 @@
 <x-app-layout>
     <x-slot name="title">Leaderboard</x-slot>
 
-    {{-- Header --}}
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900">Leaderboard</h1>
-        <p class="text-gray-500 mt-1">Peringkat peserta berdasarkan total skor</p>
-    </div>
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        
+        {{-- Header & Dekorasi --}}
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 relative">
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    Global Rankings
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500 tracking-tight">
+                    Leaderboard
+                </h1>
+                <p class="text-gray-400 mt-2 text-sm">Peringkat peserta berdasarkan total skor dan penyelesaian modul.</p>
+            </div>
 
-    {{-- Tabel --}}
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <table class="w-full">
-            <thead>
-                <tr class="border-b border-gray-100">
-                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide w-16">
-                        #
-                    </th>
-                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        Nama
-                    </th>
-                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        NIM
-                    </th>
-                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        Kelompok
-                    </th>
-                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        Soal Selesai
-                    </th>
-                    <th class="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                        Total Skor
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($leaderboard as $index => $row)
-                    @php
-                        $rank = $index + 1;
-                        $isMe = session('nim') === $row->nim;
-                    @endphp
-                    <tr class="border-b border-gray-50 transition hover:bg-gray-50
-                               {{ $isMe ? 'bg-yellow-50' : '' }}">
+            <div class="flex items-center gap-2 bg-[#111113] border border-white/5 px-4 py-2.5 rounded-xl shadow-lg relative z-10">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="font-mono text-xs font-medium text-emerald-500/80 uppercase tracking-wider">Live Sync (30s)</span>
+            </div>
+        </div>
 
-                        {{-- Rank --}}
-                        <td class="px-6 py-4">
-                            @if($rank === 1)
-                                <span class="text-xl">🥇</span>
-                            @elseif($rank === 2)
-                                <span class="text-xl">🥈</span>
-                            @elseif($rank === 3)
-                                <span class="text-xl">🥉</span>
-                            @else
-                                <span class="text-sm font-medium text-gray-500">{{ $rank }}</span>
-                            @endif
-                        </td>
+        {{-- Tabel Leaderboard --}}
+        <div class="bg-[#111113] rounded-2xl border border-white/5 shadow-2xl overflow-hidden relative">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#18181b] border-b border-white/5">
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest w-20 text-center">Rank</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Peserta</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">NIM</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Kelompok</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Solved</th>
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest text-right">Total Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        @forelse($leaderboard as $index => $row)
+                            @php
+                                $rank = $index + 1;
+                                $isMe = session('nim') === $row->nim;
+                            @endphp
+                            <tr class="transition-colors duration-200 hover:bg-white/[0.02] {{ $isMe ? 'bg-indigo-500/[0.03] relative' : '' }}">
+                                
+                                
+                                {{-- Rank / Lencana Juara --}}
+                                <td class="px-6 py-4">
+                                    {{-- Border Kiri Khusus User Aktif --}}
+                                    @if($isMe)
+                                        <span class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)] h-full"></span>
+                                    @endif
+                                    <div class="flex justify-center">
+                                        @if($rank === 1)
+                                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center font-extrabold text-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]">1</div>
+                                        @elseif($rank === 2)
+                                            <div class="w-8 h-8 rounded-lg bg-gray-400/10 border border-gray-400/30 text-gray-300 flex items-center justify-center font-extrabold text-sm shadow-[0_0_15px_rgba(156,163,175,0.2)]">2</div>
+                                        @elseif($rank === 3)
+                                            <div class="w-8 h-8 rounded-lg bg-amber-700/10 border border-amber-700/30 text-amber-600 flex items-center justify-center font-extrabold text-sm shadow-[0_0_15px_rgba(180,83,9,0.2)]">3</div>
+                                        @else
+                                            <div class="w-8 h-8 rounded-lg bg-gray-800/30 border border-gray-700/50 text-gray-500 flex items-center justify-center font-bold text-sm font-mono">{{ $rank }}</div>
+                                        @endif
+                                    </div>
+                                </td>
 
-                        {{-- Nama --}}
-                        <td class="px-6 py-4">
-                            <span class="font-medium text-gray-900">
-                                {{ $row->nama }}
-                                @if($isMe)
-                                    <span class="text-xs ml-1 px-2 py-0.5 rounded-full font-medium"
-                                          style="background-color:#fdf6e7; color:#D4A853; border:1px solid #D4A853">
-                                        Kamu
+                                {{-- Nama & Badge "Kamu" --}}
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-400 border border-white/5 flex-shrink-0">
+                                            {{ substr($row->nama, 0, 1) }}
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-semibold {{ $isMe ? 'text-indigo-300' : 'text-gray-200' }}">
+                                                {{ $row->nama }}
+                                            </span>
+                                            @if($isMe)
+                                                <span class="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                                                    Kamu
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- NIM --}}
+                                <td class="px-6 py-4 text-sm text-gray-400 font-mono">
+                                    {{ $row->nim }}
+                                </td>
+
+                                {{-- Kelompok --}}
+                                <td class="px-6 py-4 text-sm text-gray-400">
+                                    <span class="px-2.5 py-1 rounded-lg bg-gray-800/50 border border-gray-700/50 text-xs font-medium">
+                                        Tim {{ $row->kelompok }}
                                     </span>
-                                @endif
-                            </span>
-                        </td>
+                                </td>
 
-                        {{-- NIM --}}
-                        <td class="px-6 py-4 text-sm text-gray-500">
-                            {{ $row->nim }}
-                        </td>
+                                {{-- Soal Selesai --}}
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono text-sm font-bold border border-emerald-500/20">
+                                        {{ $row->solved }}
+                                    </span>
+                                </td>
 
-                        {{-- Kelompok --}}
-                        <td class="px-6 py-4 text-sm text-gray-500">
-                            Kelompok {{ $row->kelompok }}
-                        </td>
+                                {{-- Total Skor --}}
+                                <td class="px-6 py-4 text-right">
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#09090b] border border-white/5">
+                                        <span class="text-indigo-500">✦</span>
+                                        <span class="font-bold text-indigo-400 font-mono">{{ $row->total_score }}</span>
+                                    </div>
+                                </td>
 
-                        {{-- Soal Selesai --}}
-                        <td class="px-6 py-4 text-sm text-gray-500">
-                            {{ $row->solved }} soal
-                        </td>
-
-                        {{-- Total Skor --}}
-                        <td class="px-6 py-4 text-right">
-                            <span class="font-bold text-gray-900">{{ $row->total_score }}</span>
-                        </td>
-
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
-                            Belum ada peserta yang mengumpulkan skor.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-20 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="w-16 h-16 bg-gray-800/50 rounded-2xl flex items-center justify-center text-gray-500 mb-4 border border-gray-700/50">
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                        </div>
+                                        <p class="text-lg font-medium text-gray-300">Belum ada data tersedia.</p>
+                                        <p class="text-gray-500 text-sm mt-1">Skor akan muncul di sini setelah peserta mulai mengerjakan modul.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    {{-- Auto refresh tiap 30 detik --}}
+    {{-- CSS Kustom & Auto refresh tiap 30 detik --}}
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+    </style>
+
     <script>
         setTimeout(() => location.reload(), 30000);
     </script>
