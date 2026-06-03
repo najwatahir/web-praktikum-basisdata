@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
-    // ── TEST: jalankan query tapi tidak simpan skor ──
+    // buat test query
     public function test(Request $request)
     {
         if (!session('nim')) {
@@ -23,9 +23,17 @@ class SubmissionController extends Controller
             'query'       => 'required|string|max:5000',
         ]);
 
-        $question = Question::findOrFail($request->question_id);
+        $question = Question::with('testCases')->findOrFail($request->question_id);
+        
+        // ambil test case public (is_hidden = false) untuk diujicobakan
+        $publicTestCase = $question->testCases->where('is_hidden', false)->first();
+
+        if (!$publicTestCase) {
+            return response()->json(['status' => 'error', 'message' => 'Test case public tidak ditemukan untuk soal ini.'], 404);
+        }
+
         $sandbox  = new SqlSandboxService();
-        $result   = $sandbox->run($question->schema_sql, $request->input('query'));
+        $result   = $sandbox->run($publicTestCase->schema_sql, $request->input('query'));
 
         if ($result['status'] === 'error') {
             return response()->json([
@@ -41,7 +49,7 @@ class SubmissionController extends Controller
         ]);
     }
 
-    // ── SUBMIT: jalankan query dan simpan skor ──
+    // submit query (langsung keluar nilai)
     public function submit(Request $request)
     {
         if (!session('nim')) {
@@ -54,25 +62,56 @@ class SubmissionController extends Controller
         ]);
 
         $nim      = session('nim');
-        $question = Question::findOrFail($request->question_id);
+        $question = Question::with('testCases')->findOrFail($request->question_id);
 
-        // Cek apakah sudah pernah dapat 100
+        // poin maksimal dari gabungan test case adalah 100
+        $maxScore = 100; 
+
+        // cek apakah sudah pernah dapat 100
         $alreadyPerfect = Submission::where('nim', $nim)
             ->where('question_id', $question->id)
-            ->where('score', $question->poin)
+            ->where('score', $maxScore)
             ->exists();
 
-        // Hitung attempt
+        // hitung attempt
         $attempt = Submission::where('nim', $nim)
             ->where('question_id', $question->id)
             ->count() + 1;
 
-        // Jalankan di sandbox
         $sandbox = new SqlSandboxService();
-        $result  = $sandbox->run($question->schema_sql, $request->input('query'));
+        $validator = new SqlValidatorService();
 
-        // Error syntax
-        if ($result['status'] === 'error') {
+        $totalScore = 0;
+        $isSyntaxError = false;
+        $errorMessage = '';
+        $finalResultData = null;
+
+        foreach ($question->testCases as $tc) {
+            $result = $sandbox->run($tc->schema_sql, $request->input('query'));
+
+            if ($result['status'] === 'error') {
+                $isSyntaxError = true;
+                $errorMessage = $result['message'];
+                break; 
+            }
+
+            if (!$tc->is_hidden) {
+                $finalResultData = $result['data'];
+            }
+
+            $isMatch = $validator->validate(
+                $result['data'],
+                $tc->expected_output,
+                $question->order_matters,
+                $request->input('query')
+            );
+
+            if ($isMatch) {
+                $totalScore += $tc->bobot_poin;
+            }
+        }
+
+        if ($isSyntaxError) {
             Submission::create([
                 'nim'         => $nim,
                 'question_id' => $question->id,
@@ -80,41 +119,19 @@ class SubmissionController extends Controller
                 'is_correct'  => false,
                 'score'       => 0,
                 'attempt'     => $attempt,
-                'feedback'    => $result['message'],
+                'feedback'    => $errorMessage,
             ]);
 
             return response()->json([
                 'status'  => 'error',
-                'message' => $result['message'],
+                'message' => $errorMessage,
             ]);
         }
 
-        // Hitung skor
-        $validator = new SqlValidatorService();
-        $score     = $validator->score(
-            $result['data'],
-            $question->expected_output,
-            $question->order_matters
-        );
-
-        $isCorrect = $score === 100;
-        $finalScore = $alreadyPerfect ? 0 : $score;
+        $isCorrect  = $totalScore == $maxScore;
+        $finalScore = $alreadyPerfect ? 0 : $totalScore;
         $feedback   = null;
 
-        // Kalau tidak sempurna, minta hint dari Gemini
-        if (!$isCorrect) {
-            try {
-                $gemini   = new GeminiService();
-                $feedback = $gemini->getFeedback(
-                    $question->deskripsi,
-                    $request->input('query')
-                );
-            } catch (\Exception $e) {
-                $feedback = 'Coba periksa kembali query kamu.';
-            }
-        }
-
-        // Simpan submission
         Submission::create([
             'nim'         => $nim,
             'question_id' => $question->id,
@@ -126,17 +143,17 @@ class SubmissionController extends Controller
         ]);
 
         return response()->json([
-    'status'   => $isCorrect ? 'correct' : ($score > 0 ? 'partial' : 'wrong'),
-    'score'    => $finalScore,
-    'message'  => $isCorrect
-        ? ($alreadyPerfect
-            ? 'Jawaban benar! Tapi kamu sudah pernah mendapat nilai penuh untuk soal ini.'
-            : 'Jawaban benar!')
-        : ($score > 0
-            ? "Jawaban sebagian benar. Kamu mendapat {$finalScore} poin."
-            : 'Jawaban belum tepat.'),
-    'feedback' => $feedback,
-    'result'   => $result['data'],
-]);
+            'status'   => $isCorrect ? 'correct' : ($totalScore > 0 ? 'partial' : 'wrong'),
+            'score'    => $finalScore,
+            'message'  => $isCorrect
+                ? ($alreadyPerfect
+                    ? 'Jawaban benar! Tapi kamu sudah pernah mendapat nilai penuh untuk soal ini.'
+                    : 'Jawaban sempurna! Berhasil melewati semua Test Case.')
+                : ($totalScore > 0
+                    ? "Jawaban sebagian benar. Kamu lolos di beberapa Test Case dan mendapat {$finalScore} poin."
+                    : 'Jawaban belum tepat. Gagal di semua Test Case.'),
+            'feedback' => $feedback,
+            'result'   => $finalResultData,
+        ]);
     }
 }

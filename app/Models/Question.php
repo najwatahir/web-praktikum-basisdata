@@ -28,4 +28,9 @@ class Question extends Model
     {
         return $this->hasMany(Submission::class);
     }
+
+    public function testCases()
+{
+    return $this->hasMany(TestCase::class);
+}
 }

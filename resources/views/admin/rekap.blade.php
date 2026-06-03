@@ -69,7 +69,7 @@
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap w-12">No</th>
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">NIM</th>
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap min-w-[150px]">Nama Peserta</th>
-                            <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Tim</th>
+                            <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Kelompok</th>
                             @foreach($questions as $q)
                                 <th class="text-center px-4 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
                                     Q{{ $q->urutan }}
@@ -91,7 +91,6 @@
                                     </span>
                                 </td>
 
-                                {{-- Logika Loop Skor Tetap Sama --}}
                                 @foreach($questions as $q)
                                     @php
                                         $score = 0;
@@ -151,7 +150,6 @@
                         @endforelse
                     </tbody>
 
-                    {{-- Footer Rata-rata Total --}}
                     @if($rekap->count() > 0)
                         <tfoot class="bg-[#18181b] border-t border-white/10 relative z-20">
                             <tr>
@@ -159,7 +157,6 @@
                                     Rata-Rata Modul (Avg)
                                 </td>
                                 
-                                {{-- Logika Loop Closure Rata-Rata Tetap Sama --}}
                                 @foreach($questions as $q)
                                     <td class="px-4 py-4 text-center text-[11px] font-bold text-gray-400 font-mono">
                                         {{ round($rekap->avg(function($r) use ($q, $scorePerSoal, $partialScore) {
@@ -189,7 +186,6 @@
         </div>
     </div>
 
-    {{-- Custom Scrollbar CSS for wide tables in dark mode --}}
     <style>
         .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #09090b; border-radius: 0 0 1rem 1rem; }

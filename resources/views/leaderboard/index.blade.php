@@ -69,7 +69,6 @@
                                     </div>
                                 </td>
 
-                                {{-- Nama & Badge "Kamu" --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-400 border border-white/5 flex-shrink-0">
@@ -88,26 +87,22 @@
                                     </div>
                                 </td>
 
-                                {{-- NIM --}}
                                 <td class="px-6 py-4 text-sm text-gray-400 font-mono">
                                     {{ $row->nim }}
                                 </td>
 
-                                {{-- Kelompok --}}
                                 <td class="px-6 py-4 text-sm text-gray-400">
                                     <span class="px-2.5 py-1 rounded-lg bg-gray-800/50 border border-gray-700/50 text-xs font-medium">
-                                        Tim {{ $row->kelompok }}
+                                        Kelompok {{ $row->kelompok }}
                                     </span>
                                 </td>
 
-                                {{-- Soal Selesai --}}
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono text-sm font-bold border border-emerald-500/20">
                                         {{ $row->solved }}
                                     </span>
                                 </td>
 
-                                {{-- Total Skor --}}
                                 <td class="px-6 py-4 text-right">
                                     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#09090b] border border-white/5">
                                         <span class="text-indigo-500">✦</span>

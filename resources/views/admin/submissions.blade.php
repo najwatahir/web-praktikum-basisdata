@@ -102,7 +102,7 @@
                         <tr class="bg-[#18181b]/50 border-b border-white/5">
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Timestamp</th>
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Peserta</th>
-                            <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Tim</th>
+                            <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Kelompok</th>
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Soal</th>
                             <th class="px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap w-1/3">Query Execution</th>
                             <th class="text-center px-5 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Try</th>

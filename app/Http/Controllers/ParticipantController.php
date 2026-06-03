@@ -8,10 +8,9 @@ use Illuminate\Http\Request;
 
 class ParticipantController extends Controller
 {
-    // halaman awal — form input NIM, nama, kelompok
+    // halaman awal
     public function index()
     {
-        // kalau sudah join, langsung ke soal
         if (session('nim')) {
             return redirect()->route('questions.index');
         }
@@ -61,13 +60,14 @@ class ParticipantController extends Controller
             ->orderBy('urutan')
             ->get();
 
-        // ambil soal mana yang sudah dijawab benar
-        $solved = \App\Models\Submission::where('nim', session('nim'))
-            ->where('is_correct', true)
-            ->pluck('question_id')
+        // ambil skor tertinggi per soal untuk mahasiswa ini
+        $userScores = \App\Models\Submission::where('nim', session('nim'))
+            ->select('question_id', \Illuminate\Support\Facades\DB::raw('MAX(score) as max_score'))
+            ->groupBy('question_id')
+            ->pluck('max_score', 'question_id')
             ->toArray();
 
-        return view('participant.questions', compact('questions', 'solved'));
+        return view('participant.questions', compact('questions', 'userScores'));
     }
 
     // halaman kerjakan soal

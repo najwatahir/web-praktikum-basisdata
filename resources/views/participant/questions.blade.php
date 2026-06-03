@@ -14,7 +14,12 @@
             </div>
         </div>
 
-        {{-- Stats (Berdasarkan variabel asli) --}}
+        @php
+            // Hitung total soal yang sudah ada record skornya
+            $dijawabCount = count($userScores ?? []);
+        @endphp
+
+        {{-- Stats (Sudah Dinamis) --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm relative overflow-hidden">
                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none"></div>
@@ -24,27 +29,34 @@
             <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm relative overflow-hidden">
                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none"></div>
                 <p class="text-sm text-gray-500 mb-1 font-medium tracking-wide">Sudah Dijawab</p>
-                <p class="text-4xl font-extrabold text-emerald-400">{{ count($solved) }}</p>
+                <p class="text-4xl font-extrabold text-emerald-400">{{ $dijawabCount }}</p>
             </div>
             <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm relative overflow-hidden">
                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-500/5 rounded-full blur-xl pointer-events-none"></div>
                 <p class="text-sm text-gray-500 mb-1 font-medium tracking-wide">Belum Dijawab</p>
-                <p class="text-4xl font-extrabold text-white">{{ $questions->count() - count($solved) }}</p>
+                <p class="text-4xl font-extrabold text-white">{{ $questions->count() - $dijawabCount }}</p>
             </div>
         </div>
 
-        {{-- Daftar Soal (Berdasarkan loop asli) --}}
+        {{-- Daftar Soal (Logika Dinamis) --}}
         <div class="grid gap-4">
             @forelse($questions as $question)
-                @php $isSolved = in_array($question->id, $solved); @endphp
+                @php 
+                    // Ambil skor dari controller
+                    $myScore = $userScores[$question->id] ?? null;
+                    $isSolved = $myScore == 100; // Asumsi poin sempurna = 100
+                    $isPartial = $myScore !== null && $myScore > 0 && $myScore < 100;
+                    $isFailed = $myScore !== null && $myScore == 0;
+                @endphp
+                
                 <a href="{{ route('questions.solve', $question->id) }}"
                    class="group bg-[#111113] rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 p-6 flex flex-col sm:flex-row sm:items-center justify-between
-                          {{ $isSolved ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-gray-800 hover:border-indigo-500/40 hover:bg-[#151518]' }}">
+                          {{ $isSolved ? 'border-emerald-500/30 bg-emerald-500/5' : ($isPartial ? 'border-orange-500/30 bg-orange-500/5' : 'border-gray-800 hover:border-indigo-500/40 hover:bg-[#151518]') }}">
                     
                     <div class="flex items-center gap-5 mb-4 sm:mb-0">
-                        {{-- Nomor dengan Glassmorphism Accents --}}
+                        {{-- Nomor dengan Glassmorphism Accents Dinamis --}}
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition-colors duration-300
-                                    {{ $isSolved ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 group-hover:border-indigo-500/30' }}">
+                                    {{ $isSolved ? 'bg-emerald-500/20 text-emerald-400' : ($isPartial ? 'bg-orange-500/20 text-orange-400' : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 group-hover:border-indigo-500/30') }}">
                             {{ $question->urutan }}
                         </div>
                         <div>
@@ -54,14 +66,28 @@
                     </div>
                     
                     <div class="flex items-center gap-4 flex-shrink-0">
+                        {{-- Poin Dinamis --}}
                         <span class="text-sm font-semibold text-gray-400 bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-700/50">
-                            {{ $question->poin }} <span class="font-medium text-gray-500">poin</span>
+                            @if($myScore !== null)
+                                <span class="{{ $isSolved ? 'text-emerald-400' : ($isPartial ? 'text-orange-400' : 'text-red-400') }}">{{ $myScore }}</span> / {{ $question->poin }} <span class="font-medium text-gray-500">pts</span>
+                            @else
+                                {{ $question->poin }} <span class="font-medium text-gray-500">pts</span>
+                            @endif
                         </span>
                         
+                        {{-- Badges Dinamis --}}
                         @if($isSolved)
                             <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 Selesai
+                            </span>
+                        @elseif($isPartial)
+                            <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20">
+                                ⚡ Sebagian
+                            </span>
+                        @elseif($isFailed)
+                            <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-red-400 bg-red-500/10 border border-red-500/20">
+                                ✗ Gagal
                             </span>
                         @else
                             <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-gray-400 bg-gray-800 border border-gray-700 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30 transition-colors duration-300">
