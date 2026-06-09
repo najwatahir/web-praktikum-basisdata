@@ -56,10 +56,7 @@
                     <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
                     <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
                 </div>
-                <div class="flex items-center gap-1.5 text-[10px] font-mono font-medium text-emerald-500/80 uppercase tracking-widest">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                    Data Integrity: Verified
-                </div>
+    
             </div>
 
             <div class="overflow-x-auto custom-scrollbar">
@@ -87,7 +84,7 @@
                                 <td class="px-5 py-3.5 font-semibold text-gray-200">{{ $row->nama }}</td>
                                 <td class="px-5 py-3.5">
                                     <span class="text-xs px-2.5 py-1 rounded-md bg-gray-800/50 border border-gray-700/50 text-gray-400 font-medium whitespace-nowrap">
-                                        G-{{ str_pad($row->kelompok, 2, '0', STR_PAD_LEFT) }}
+                                        {{ str_pad($row->kelompok, 2, '0', STR_PAD_LEFT) }}
                                     </span>
                                 </td>
 
@@ -175,9 +172,14 @@
                                 @endforeach
                                 
                                 <td class="px-5 py-4 text-right text-sm font-extrabold text-indigo-400 font-mono border-l border-white/5 bg-indigo-500/5">
-                                    {{ round($rekap->avg('total_score')) }} <span class="text-[10px] text-indigo-500/50 font-sans uppercase">pts</span>
+                                   <span class="text-indigo-500/70 text-xs">✦</span>
+                                    {{ round($rekap->avg('total_score')) }}
                                 </td>
-                                <td class="bg-indigo-500/5"></td>
+                                <td class="px-5 py-3.5 text-center">
+                                    <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md">
+                                    </div>
+                                </td>
+                                {{-- <td class="bg-indigo-500/5">0</td> --}}
                             </tr>
                         </tfoot>
                     @endif

@@ -133,7 +133,7 @@
                                 {{-- Kelompok --}}
                                 <td class="px-5 py-4 whitespace-nowrap">
                                     <span class="text-[11px] px-2.5 py-1 rounded-md bg-gray-800/50 border border-gray-700/50 text-gray-400 font-medium">
-                                        G-{{ str_pad($sub->participant->kelompok ?? '-', 2, '0', STR_PAD_LEFT) }}
+                                        {{ str_pad($sub->participant->kelompok ?? '-', 2, '0', STR_PAD_LEFT) }}
                                     </span>
                                 </td>
 
