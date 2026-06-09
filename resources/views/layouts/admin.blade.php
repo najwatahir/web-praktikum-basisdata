@@ -12,9 +12,7 @@
 
     <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-    {{-- Sidebar (Premium Dark Mode) --}}
     <aside class="w-64 bg-[#111113] border-r border-white/5 flex flex-col fixed h-full z-20 shadow-2xl">
-        {{-- Logo Area --}}
         <div class="px-6 py-6 border-b border-white/5 relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
             
@@ -24,12 +22,10 @@
                 </div>
                 <div>
                     <h2 class="font-extrabold text-sm tracking-tight text-gray-200">DB<span class="text-indigo-400">Mastery</span> Admin</h2>
-                    <p class="text-[10px] font-mono mt-0.5 font-semibold text-amber-500/80 uppercase tracking-widest">Elaborasi 2026</p>
                 </div>
             </div>
         </div>
 
-        {{-- Menu Navigasi dengan Efek Hover Halus --}}
         <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
             <p class="px-3 text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-3">Main Menu</p>
             
@@ -45,6 +41,13 @@
                       {{ request()->routeIs('admin.rekap') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent' }}">
                 <svg class="w-4 h-4 {{ request()->routeIs('admin.rekap') ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 Rekap Nilai
+            </a>
+
+            <a href="{{ route('admin.students') }}"
+               class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                      {{ request()->routeIs('admin.rekap') ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Daftar Praktikan
             </a>
             
             <a href="{{ route('admin.submissions') }}"
@@ -75,7 +78,6 @@
             </div>
         </nav>
 
-        {{-- User Identity + Logout Area --}}
         <div class="p-4 border-t border-white/5 bg-[#09090b]/50">
             <div class="flex items-center gap-3 px-2 mb-4">
                 <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400 border border-emerald-500/30">
@@ -98,10 +100,8 @@
         </div>
     </aside>
 
-    {{-- Main Content Area --}}
     <div class="flex-1 ml-64 flex flex-col relative z-10 min-h-screen">
         
-        {{-- Glassmorphism Topbar --}}
         <header class="sticky top-0 z-30 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/5 px-8 py-4 flex items-center justify-between transition-all duration-300">
             <h1 class="text-xl font-bold text-gray-100 tracking-tight">{{ $title ?? 'Dashboard' }}</h1>
             
@@ -123,7 +123,6 @@
             </div>
         </header>
 
-        {{-- Slot Content --}}
         <main class="flex-1 p-8">
             <div class="max-w-7xl mx-auto">
                 {{ $slot }}

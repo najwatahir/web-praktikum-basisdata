@@ -40,7 +40,6 @@
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-
                     <div class="mb-4">
                         <label class="block text-white/80 text-sm font-medium mb-1" for="email">Email Admin</label>
                         <input

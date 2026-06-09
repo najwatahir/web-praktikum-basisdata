@@ -78,12 +78,16 @@
 </td>
 
 <td class="py-4 px-6 text-center">
+    <a href="{{ route('admin.questions.edit', $q->id) }}" class="inline-block px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg text-sm transition">
+        Edit
+    </a>
     <form action="{{ route('admin.questions.destroy', $q->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus soal ini? Semua Test Case dan riwayat jawaban praktikan untuk soal ini akan ikut terhapus permanen.');">
         @csrf
         @method('DELETE')
         <button type="submit" class="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-red-500/30 text-sm font-medium">
             Hapus
         </button>
+        
     </form>
 </td>
                             </tr>

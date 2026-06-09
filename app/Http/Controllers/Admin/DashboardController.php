@@ -26,6 +26,45 @@ class DashboardController extends Controller
         ));
     }
 
+    public function students(Request $request)
+    {
+        $kelompok = $request->input('kelompok');
+        $search   = $request->input('search');
+
+        $query = DB::table('participants')
+            ->leftJoin('submissions', function($join) {
+                $join->on('participants.nim', '=', 'submissions.nim')
+                     ->where('submissions.is_correct', true);
+            })
+            ->select(
+                'participants.nim',
+                'participants.nama',
+                'participants.kelompok',
+                DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
+                DB::raw('COUNT(DISTINCT submissions.question_id) as solved')
+            )
+            ->groupBy('participants.nim', 'participants.nama', 'participants.kelompok')
+            ->orderByDesc('total_score')
+            ->orderBy('participants.kelompok')
+            ->orderBy('participants.nim');
+
+        if ($kelompok) {
+            $query->where('participants.kelompok', $kelompok);
+        }
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('participants.nama', 'like', "%{$search}%")
+                  ->orWhere('participants.nim', 'like', "%{$search}%");
+            });
+        }
+
+        $students  = $query->paginate(50)->withQueryString(); 
+        $kelompoks = Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
+
+        return view('admin.students.index', compact('students', 'kelompoks', 'kelompok', 'search'));
+    }
+
     public function rekap(Request $request)
     {
         $kelompok = $request->input('kelompok');
@@ -54,14 +93,12 @@ class DashboardController extends Controller
         $kelompoks = Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
         $questions = Question::orderBy('urutan')->get();
 
-        // Ambil skor per soal per peserta
         $scorePerSoal = Submission::where('is_correct', true)
             ->select('nim', 'question_id', DB::raw('MAX(score) as score'))
             ->groupBy('nim', 'question_id')
             ->get()
             ->groupBy('nim');
 
-        // Tambah partial score juga
         $partialScore = Submission::where('is_correct', false)
             ->where('score', '>', 0)
             ->select('nim', 'question_id', DB::raw('MAX(score) as score'))

@@ -67,6 +67,32 @@ class QuestionController extends Controller
         return back()->with('success', 'Soal dan Test Case berhasil ditambahkan!');
     }
 
+    // Menampilkan form edit yang sudah terisi data lama
+    public function edit($id)
+    {
+        $question = \App\Models\Question::findOrFail($id);
+        
+        return view('admin.questions.edit', compact('question'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'judul'     => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'poin'      => 'required|integer|min:1',
+        ]);
+
+        $question = \App\Models\Question::findOrFail($id);
+        $question->update([
+            'judul'     => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'poin'      => $request->poin,
+        ]);
+
+        return redirect()->route('admin.questions.index')->with('success', 'Soal berhasil diperbarui!');
+    }
+
     // buat menghapus soal sama test casenya
     public function destroy($id)
     {
