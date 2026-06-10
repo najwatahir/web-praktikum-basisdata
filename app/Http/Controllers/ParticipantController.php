@@ -51,7 +51,7 @@ class ParticipantController extends Controller
             }
 
         } catch (\Exception $e) {
-
+            dd('ERROR LOGIN GOOGLE: ' . $e->getMessage());
         }
     }
 
