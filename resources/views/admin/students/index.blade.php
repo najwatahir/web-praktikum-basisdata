@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Daftar Mahasiswa - Leaderboard</x-slot>
+    <x-slot name="title">Daftar Mahasiswa</x-slot>
 
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="mb-6">
