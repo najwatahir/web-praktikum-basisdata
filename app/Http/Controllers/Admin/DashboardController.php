@@ -27,43 +27,35 @@ class DashboardController extends Controller
     }
 
     public function students(Request $request)
-    {
-        $kelompok = $request->input('kelompok');
-        $search   = $request->input('search');
+{
+    $students = \App\Models\Participant::leftJoin('submissions', function($join) {
+            $join->on('participants.nim', '=', 'submissions.nim')
+                 ->where('submissions.is_correct', true); // Hanya hitung waktu jawaban yang BENAR
+        })
+        ->select(
+            'participants.nim',
+            'participants.nama',
+            'participants.kelompok',
+            'participants.email',
+            \DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
+            \DB::raw('COUNT(DISTINCT submissions.question_id) as solved'),
+            
+            // 1. Ambil waktu submit terakhir yang benar
+            \DB::raw('MAX(submissions.created_at) as last_solved_at') 
+        )
+        ->groupBy(
+            'participants.nim', 
+            'participants.nama', 
+            'participants.kelompok',
+            'participants.email'
+        )
+        ->orderBy('total_score', 'desc') // Peringkat 1: Skor Tertinggi
+        ->orderBy('last_solved_at', 'asc') // Peringkat 2 (Tie-breaker): Siapa yang lebih cepat/duluan!
+        ->orderBy('participants.kelompok', 'asc')
+        ->paginate(50);
 
-        $query = DB::table('participants')
-            ->leftJoin('submissions', function($join) {
-                $join->on('participants.nim', '=', 'submissions.nim')
-                     ->where('submissions.is_correct', true);
-            })
-            ->select(
-                'participants.nim',
-                'participants.nama',
-                'participants.kelompok',
-                DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
-                DB::raw('COUNT(DISTINCT submissions.question_id) as solved')
-            )
-            ->groupBy('participants.nim', 'participants.nama', 'participants.kelompok')
-            ->orderByDesc('total_score')
-            ->orderBy('participants.kelompok')
-            ->orderBy('participants.nim');
-
-        if ($kelompok) {
-            $query->where('participants.kelompok', $kelompok);
-        }
-
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('participants.nama', 'like', "%{$search}%")
-                  ->orWhere('participants.nim', 'like', "%{$search}%");
-            });
-        }
-
-        $students  = $query->paginate(50)->withQueryString(); 
-        $kelompoks = Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
-
-        return view('admin.students.index', compact('students', 'kelompoks', 'kelompok', 'search'));
-    }
+    return view('admin.students.index', compact('students', 'kelompoks'));
+}
 
     public function rekap(Request $request)
     {

@@ -17,6 +17,83 @@ class ParticipantController extends Controller
         return view('welcome');
     }
 
+    public function redirectToGoogle()
+    {
+        return \Laravel\Socialite\Facades\Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+            
+            // Validasi email kampus sudah dihapus di sini, bebas pakai email apa saja.
+
+            $participant = \App\Models\Participant::where('email', $googleUser->email)->first();
+
+            if ($participant) {
+                session([
+                    'nim'      => $participant->nim,
+                    'nama'     => $participant->nama,
+                    'kelompok' => $participant->kelompok,
+                    'email'    => $participant->email,
+                ]);
+                return redirect()->route('questions.index')->with('success', 'Selamat datang kembali di ruang praktikum!');
+            } else {
+                session([
+                    'temp_google_email' => $googleUser->email,
+                    'temp_google_name'  => $googleUser->name,
+                ]);
+                return redirect()->route('participant.complete_profile');
+            }
+
+        } catch (\Exception $e) {
+            return redirect('/')->withErrors(['email' => 'Gagal terhubung dengan Google. Silakan coba lagi. Error: ' . $e->getMessage()]);
+        }
+    }
+
+    public function storeProfile(Request $request)
+    {
+        // 1. Validasi inputan mahasiswa (NIM wajib unik biar nggak ada yang double)
+        $request->validate([
+            'nim'      => 'required|string|unique:participants,nim',
+            'kelompok' => 'required|integer|min:1',
+        ], [
+            'nim.unique' => 'NIM ini sudah terdaftar. Silakan hubungi asisten jika ini adalah kesalahan.'
+        ]);
+
+        // 2. Ambil Email dan Nama yang tadi dititipkan sementara oleh Google
+        $email = session('temp_google_email');
+        $nama  = session('temp_google_name');
+
+        // Keamanan tambahan: Cegah mahasiswa iseng ngetik URL /complete-profile secara manual
+        if (!$email || !$nama) {
+            return redirect('/')->with('error', 'Sesi pendaftaran tidak valid. Silakan login menggunakan Google terlebih dahulu.');
+        }
+
+        // 3. Simpan data lengkapnya ke Database
+        $participant = \App\Models\Participant::create([
+            'nim'      => $request->nim,
+            'nama'     => $nama, // Nama otomatis dari Google
+            'email'    => $email, // Email otomatis dari Google
+            'kelompok' => $request->kelompok,
+        ]);
+
+        // 4. Ubah statusnya menjadi "Sudah Login Resmi" dengan mendaftarkan Session utama
+        session([
+            'nim'      => $participant->nim,
+            'nama'     => $participant->nama,
+            'kelompok' => $participant->kelompok,
+            'email'    => $participant->email,
+        ]);
+
+        // 5. Bersihkan sampah session sementara agar memori lega
+        session()->forget(['temp_google_email', 'temp_google_name']);
+
+        // 6. Buka pintu gerbang menuju soal praktikum!
+        return redirect()->route('questions.index')->with('success', 'Profil berhasil disimpan! Selamat mengerjakan praktikum.');
+    }
+
     // proses join
     public function join(Request $request)
     {

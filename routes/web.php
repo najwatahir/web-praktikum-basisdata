@@ -17,6 +17,14 @@ Route::post('/test', [SubmissionController::class, 'test'])->name('test');
 Route::post('/submit', [SubmissionController::class, 'submit'])->name('submit');
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
+Route::get('/auth/google/redirect', [ParticipantController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [ParticipantController::class, 'handleGoogleCallback']);
+Route::get('/complete-profile', function () {
+    return view('participant.complete-profile');
+})->name('participant.complete_profile');
+
+Route::post('/complete-profile', [App\Http\Controllers\ParticipantController::class, 'storeProfile'])->name('participant.storeProfile');
+
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth'])->name('dashboard');

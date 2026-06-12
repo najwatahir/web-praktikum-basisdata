@@ -5,9 +5,10 @@ namespace App\Services;
 class SqlValidatorService
 {
     // cek benar/salah total
-    public function validate(array $userResult, array $expectedResult, bool $orderMatters = false): bool
+    // cek benar/salah total
+    public function validate(array $userResult, array $expectedResult, bool $orderMatters = false, string $userQuery = ''): bool
     {
-        return $this->score($userResult, $expectedResult, $orderMatters) === 100;
+        return $this->score($userResult, $expectedResult, $orderMatters, $userQuery) === 100;
     }
 
     public function score(array $userResult, array $expectedResult, bool $orderMatters = false, string $userQuery = ''): int

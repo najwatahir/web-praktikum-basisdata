@@ -106,6 +106,9 @@
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest w-20 text-center">Rank</th>
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Peserta</th>
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">NIM</th>
+                            
+                            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Email</th>
+                            
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Kelompok</th>
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Solved</th>
                             <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest text-right">Total Poin</th>
@@ -159,6 +162,10 @@
                                 </td>
 
                                 <td class="px-6 py-4 text-sm text-gray-400">
+                                    {{ $row->email ?? '-' }}
+                                </td>
+
+                                <td class="px-6 py-4 text-sm text-gray-400">
                                     <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-medium">
                                         Kelompok {{ str_pad($row->kelompok, 2, '0', STR_PAD_LEFT) }}
                                     </span>
@@ -179,7 +186,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-20 text-center">
+                                <td colspan="7" class="px-6 py-20 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <div class="w-16 h-16 bg-gray-800/50 rounded-2xl flex items-center justify-center text-gray-500 mb-4 border border-gray-700/50">
                                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>

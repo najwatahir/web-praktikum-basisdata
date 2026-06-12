@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Participant extends Model
 {
-    protected $fillable = ['nim', 'nama', 'kelompok'];
+    protected $fillable = ['nim', 'nama', 'kelompok', 'email'];
 
     public function submissions()
     {

@@ -8,6 +8,7 @@ use App\Services\SqlSandboxService;
 use App\Services\SqlValidatorService;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SubmissionController extends Controller
 {
@@ -52,6 +53,15 @@ class SubmissionController extends Controller
     // submit query (langsung keluar nilai)
     public function submit(Request $request)
     {
+    $question = \App\Models\Question::findOrFail($request->question_id); 
+
+    if ($question->batas_waktu && Carbon::now()->greaterThan($question->batas_waktu)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Waktu pengerjaan sudah habis! Kamu tidak bisa mengirim jawaban lagi.'
+        ], 403);
+    }
+
         if (!session('nim')) {
             return response()->json(['status' => 'error', 'message' => 'Session habis.'], 401);
         }
@@ -61,7 +71,7 @@ class SubmissionController extends Controller
             'query'       => 'required|string|max:5000',
         ]);
 
-        $nim      = session('nim');
+        $nim = session('nim');
         $question = Question::with('testCases')->findOrFail($request->question_id);
 
         // poin maksimal dari gabungan test case adalah 100

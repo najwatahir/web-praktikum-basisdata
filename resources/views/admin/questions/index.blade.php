@@ -104,6 +104,7 @@
                                     @else
                                         <span class="text-gray-600 italic text-xs font-medium">Tanpa Batas</span>
                                     @endif
+                                    @endif
                                 </td>
                                 <td class="py-4 px-6 text-center">
                                     @if ($q->aktif)
