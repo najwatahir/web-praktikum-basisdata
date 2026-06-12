@@ -9,9 +9,9 @@
                 <p class="text-gray-400 mt-2">Halo, <span class="font-semibold text-gray-200">{{ session('nama') }}</span> <span class="mx-1.5 text-gray-700">•</span> Kelompok {{ session('kelompok') }}</p>
             </div>
             
-            <div class="hidden md:block bg-gray-800/30 border border-gray-700/50 rounded-lg px-4 py-2.5 text-xs text-gray-400 italic max-w-xs text-right">
+            {{-- <div class="hidden md:block bg-gray-800/30 border border-gray-700/50 rounded-lg px-4 py-2.5 text-xs text-gray-400 italic max-w-xs text-right">
                 "Saya akan lawan!!!"
-            </div>
+            </div> --}}
         </div>
 
         @php
@@ -22,7 +22,8 @@
         {{-- Stats (Sudah Dinamis) --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm relative overflow-hidden">
-                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none"></div>
+                {{-- Mengganti bayangan biru menjadi warna emas HMTI --}}
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-[#D4A853]/5 rounded-full blur-xl pointer-events-none"></div>
                 <p class="text-sm text-gray-500 mb-1 font-medium tracking-wide">Total Soal</p>
                 <p class="text-4xl font-extrabold text-white">{{ $questions->count() }}</p>
             </div>
@@ -51,12 +52,12 @@
                 
                 <a href="{{ route('questions.solve', $question->id) }}"
                    class="group bg-[#111113] rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-1 p-6 flex flex-col sm:flex-row sm:items-center justify-between
-                          {{ $isSolved ? 'border-emerald-500/30 bg-emerald-500/5' : ($isPartial ? 'border-orange-500/30 bg-orange-500/5' : 'border-gray-800 hover:border-indigo-500/40 hover:bg-[#151518]') }}">
+                          {{ $isSolved ? 'border-emerald-500/30 bg-emerald-500/5' : ($isPartial ? 'border-orange-500/30 bg-orange-500/5' : 'border-gray-800 hover:border-[#D4A853]/40 hover:bg-[#151518]') }}">
                     
                     <div class="flex items-center gap-5 mb-4 sm:mb-0">
-                        {{-- Nomor dengan Glassmorphism Accents Dinamis --}}
+                        {{-- Nomor dengan Glassmorphism Accents Dinamis yang menggunakan aksen HMTI pada status default --}}
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 transition-colors duration-300
-                                    {{ $isSolved ? 'bg-emerald-500/20 text-emerald-400' : ($isPartial ? 'bg-orange-500/20 text-orange-400' : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 group-hover:border-indigo-500/30') }}">
+                                    {{ $isSolved ? 'bg-emerald-500/20 text-emerald-400' : ($isPartial ? 'bg-orange-500/20 text-orange-400' : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 group-hover:bg-[#D4A853]/20 group-hover:text-[#D4A853] group-hover:border-[#D4A853]/30') }}">
                             {{ $question->urutan }}
                         </div>
                         <div>
@@ -90,7 +91,8 @@
                                 ✗ Gagal
                             </span>
                         @else
-                            <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-gray-400 bg-gray-800 border border-gray-700 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30 transition-colors duration-300">
+                            {{-- Mengubah aksen hover Badge Mulai menjadi warna HMTI --}}
+                            <span class="flex items-center gap-1.5 text-sm px-4 py-1.5 rounded-lg font-bold text-gray-400 bg-gray-800 border border-gray-700 group-hover:text-[#D4A853] group-hover:bg-[#D4A853]/10 group-hover:border-[#D4A853]/30 transition-colors duration-300">
                                 Mulai
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                             </span>
