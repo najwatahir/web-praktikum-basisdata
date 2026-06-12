@@ -67,6 +67,42 @@ class QuestionController extends Controller
         return back()->with('success', 'Soal dan Test Case berhasil ditambahkan!');
     }
 
+    public function edit($id)
+    {
+        $question = \App\Models\Question::findOrFail($id);
+        
+        return view('admin.questions.edit', compact('question'));
+    }
+
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'judul'             => 'required|string|max:255',
+        'deskripsi'         => 'required|string',
+        'poin'              => 'required|integer|min:1',
+        'urutan'            => 'nullable|integer',
+        'batas_waktu'       => 'nullable|date',
+        'expected_query'    => 'nullable|string',
+        'required_keywords' => 'nullable|array',
+    ]);
+
+    $question = \App\Models\Question::findOrFail($id);
+
+    $question->update([
+        'judul'             => $request->judul,
+        'deskripsi'         => $request->deskripsi,
+        'poin'              => $request->poin,
+        'urutan'            => $request->urutan,
+        'batas_waktu'       => $request->batas_waktu,
+        
+        'aktif'             => $request->has('aktif'), 
+        'expected_query'    => $request->expected_query,
+        'required_keywords' => $request->required_keywords,
+    ]);
+
+    return redirect()->route('admin.questions.index')->with('success', 'Semua data soal berhasil diperbarui!');
+}
+
     // buat menghapus soal sama test casenya
     public function destroy($id)
     {
