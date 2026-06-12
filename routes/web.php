@@ -17,12 +17,6 @@ Route::post('/test', [SubmissionController::class, 'test'])->name('test');
 Route::post('/submit', [SubmissionController::class, 'submit'])->name('submit');
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
-Route::get('/auth/google', [ParticipantController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [ParticipantController::class, 'handleGoogleCallback']);
-
-Route::get('/participant/complete-profile', [ParticipantController::class, 'completeProfile'])->name('participant.complete_profile');
-Route::post('/participant/complete-profile', [ParticipantController::class, 'storeProfile'])->name('participant.store_profile');
-
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth'])->name('dashboard');
@@ -42,8 +36,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
     Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
-    Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
-    Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
 
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });

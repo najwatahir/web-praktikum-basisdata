@@ -93,12 +93,14 @@ class DashboardController extends Controller
         $kelompoks = Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
         $questions = Question::orderBy('urutan')->get();
 
+        // Ambil skor per soal per peserta
         $scorePerSoal = Submission::where('is_correct', true)
             ->select('nim', 'question_id', DB::raw('MAX(score) as score'))
             ->groupBy('nim', 'question_id')
             ->get()
             ->groupBy('nim');
 
+        // Tambah partial score juga
         $partialScore = Submission::where('is_correct', false)
             ->where('score', '>', 0)
             ->select('nim', 'question_id', DB::raw('MAX(score) as score'))

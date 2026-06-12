@@ -17,11 +17,12 @@
 
                 {{-- Card Judul & Poin --}}
                 <div class="bg-[#111113] rounded-2xl border border-white/5 p-6 shadow-lg relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    {{-- Aksen Blur HMTI Gold --}}
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#D4A853]/10 rounded-full blur-2xl pointer-events-none"></div>
                     
                     <div class="flex items-start justify-between gap-4 mb-4 relative z-10">
                         <h1 class="text-2xl font-bold text-gray-100 tracking-tight">{{ $question->judul }}</h1>
-                        <span class="flex-shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+                        <span class="flex-shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-[#D4A853]/20 bg-[#D4A853]/10 text-[#D4A853]">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             {{ $question->poin }} pts
                         </span>
@@ -47,7 +48,8 @@
                             Database Schema
                         </h3>
                     </div>
-                    <pre class="text-[13px] bg-[#09090b] border border-white/5 rounded-xl p-4 overflow-x-auto text-indigo-300/80 font-mono leading-relaxed whitespace-pre-wrap">{{ trim($question->schema_sql) }}</pre>
+                    {{-- Warna teks diubah ke Gold opacity 80% --}}
+                    <pre class="text-[13px] bg-[#09090b] border border-white/5 rounded-xl p-4 overflow-x-auto text-[#D4A853]/80 font-mono leading-relaxed whitespace-pre-wrap">{{ trim($question->schema_sql) }}</pre>
                 </div>
 
                 {{-- Card Hasil Query (Hidden by default) --}}
@@ -78,7 +80,7 @@
 
                         <div class="flex items-center gap-1.5 text-[10px] font-mono text-emerald-500/70">
                             <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                            12ms
+                            1ms
                         </div>
                     </div>
                     
@@ -99,8 +101,9 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Test Run
                     </button>
+                    {{-- Tombol Submit dirubah warnanya menjadi Gold HMTI beserta dengan glow bayangannya --}}
                     <button onclick="submitQuery()" id="submit-btn"
-                            class="flex-1 py-3.5 rounded-xl font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all duration-200 flex items-center justify-center gap-2">
+                            class="flex-1 py-3.5 rounded-xl font-semibold text-sm text-black bg-[#D4A853] hover:bg-[#9b7c3f] shadow-[0_0_20px_rgba(212,168,83,0.3)] hover:shadow-[0_0_25px_rgba(212,168,83,0.5)] transition-all duration-200 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Submit Solution
                     </button>
@@ -122,7 +125,7 @@
                         
                         <div class="flex items-center justify-between bg-[#09090b] rounded-lg p-3 border border-white/5 mb-3">
                             <span class="text-sm text-gray-400">Score Achieved</span>
-                            <span class="text-sm font-bold text-indigo-400">{{ $lastSubmission->score }} pts</span>
+                            <span class="text-sm font-bold text-[#D4A853]">{{ $lastSubmission->score }} pts</span>
                         </div>
 
                         @if($lastSubmission->feedback)
@@ -165,7 +168,7 @@
             editor = monaco.editor.create(document.getElementById('monaco-editor'), {
                 value: `{!! $lastSubmission ? addslashes($lastSubmission->query) : 'SELECT ...' !!}`,
                 language: 'sql',
-                theme: 'vs-dark', // Diubah menjadi dark mode untuk menyelaraskan desain
+                theme: 'vs-dark',
                 fontSize: 14,
                 fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
                 minimap: { enabled: false },
@@ -263,13 +266,14 @@
             const box = document.getElementById('feedback-box');
             box.classList.remove('hidden');
             
-            // Konversi warna Notifikasi ke mode Premium Dark (Lebih Halus & Profesional)
+            // Konversi warna Notifikasi
             const styles = {
                 correct: 'background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.2); color:#34d399',
                 partial: 'background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.2); color:#fbbf24',
                 wrong:   'background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.2); color:#f87171',
                 error:   'background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.2); color:#f87171',
-                info:    'background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.2); color:#818cf8',
+                // Tipe Info disesuaikan dengan skema Gold
+                info:    'background:rgba(212,168,83,0.1); border-color:rgba(212,168,83,0.2); color:#D4A853',
             };
             
             box.style.cssText = styles[type] || styles.info;
@@ -286,7 +290,6 @@
             box.style.display = 'block';
             const keys = Object.keys(rows[0]);
             
-            // Tabel output menggunakan styling dark mode
             let html = '<table class="w-full text-[13px] border-collapse">';
             html += '<thead><tr>' + keys.map(k =>
                 `<th class="text-left px-4 py-3 bg-[#18181b] border-b border-white/5 font-semibold text-gray-400 whitespace-nowrap">${k}</th>`
@@ -294,7 +297,8 @@
             
             rows.forEach((row, i) => {
                 const bgClass = i % 2 === 0 ? 'bg-[#111113]' : 'bg-[#151518]';
-                html += `<tr class="${bgClass} hover:bg-indigo-500/5 transition-colors">` + keys.map(k =>
+                // Warna hover tabel diubah dari indigo ke Gold/10
+                html += `<tr class="${bgClass} hover:bg-[#D4A853]/5 transition-colors">` + keys.map(k =>
                     `<td class="px-4 py-2.5 text-gray-300 whitespace-nowrap font-mono">${row[k] !== null ? row[k] : '<span class="text-gray-600 italic">NULL</span>'}</td>`
                 ).join('') + '</tr>';
             });

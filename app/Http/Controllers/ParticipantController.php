@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
-use Laravel\Socialite\Facades\Socialite;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
@@ -18,79 +17,42 @@ class ParticipantController extends Controller
         return view('welcome');
     }
 
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function handleGoogleCallback()
-    {
-        try {
-            $googleUser = Socialite::driver('google')->user();
-            
-            if (!str_ends_with($googleUser->email, '@student.unud.ac.id')) {
-                return redirect('/')->withErrors(['email' => 'Akses ditolak! Kamu wajib menggunakan email kampus (@student.unud.ac.id).']);
-            }
-
-            $participant = Participant::where('email', $googleUser->email)->first();
-
-            if ($participant) {
-                session([
-                    'nim'      => $participant->nim,
-                    'nama'     => $participant->nama,
-                    'kelompok' => $participant->kelompok,
-                    'email'    => $participant->email,
-                ]);
-                return redirect()->route('questions.index')->with('success', 'Selamat datang kembali di ruang praktikum!');
-            } else {
-                session([
-                    'temp_google_email' => $googleUser->email,
-                    'temp_google_name'  => $googleUser->name,
-                ]);
-                return redirect()->route('participant.complete_profile');
-            }
-
-        } catch (\Exception $e) {
-            dd('ERROR LOGIN GOOGLE: ' . $e->getMessage());
-        }
-    }
-
-
-    public function completeProfile()
-    {
-        if (!session('temp_google_email')) {
-            return redirect('/');
-        }
-
-        return view('participant.complete-profile');
-    }
-
-    public function storeProfile(Request $request)
+    // proses join
+    public function join(Request $request)
     {
         $request->validate([
-            'nim'      => 'required|string|unique:participants,nim',
-            'kelompok' => 'required|integer|min:1',
+            'nim'      => 'required|string|max:20',
+            'nama'     => 'required|string|max:100',
+            'kelompok' => 'required|integer|min:0|max:25',
+        ], [
+            'kelompok.min' => 'Nomor kelompok minimal 1.',
+            'kelompok.max' => 'Nomor kelompok maksimal 25.',
         ]);
 
-        $participant = Participant::create([
-            'nim'      => $request->nim,
-            'nama'     => session('temp_google_name'),
-            'email'    => session('temp_google_email'),
-            'kelompok' => $request->kelompok,
-        ]);
+        // simpan atau update data peserta
+        $participant = Participant::updateOrCreate(
+            ['nim' => $request->nim],
+            [
+                'nama'     => $request->nama,
+                'kelompok' => $request->kelompok,
+            ]
+        );
 
+        // simpan ke session
         session([
             'nim'      => $participant->nim,
             'nama'     => $participant->nama,
             'kelompok' => $participant->kelompok,
-            'email'    => $participant->email,
         ]);
 
-        session()->forget(['temp_google_email', 'temp_google_name']);
+        // kelompok 00 = admin, redirect ke login admin
+        if ($request->kelompok == 0) {
+            return back()->withErrors(['kelompok' => 'Nomor kelompok 00 tidak tersedia untuk peserta.',])->withInput();
+}
 
-        return redirect()->route('questions.index')->with('success', 'Profil berhasil disimpan! Selamat datang di ruang praktikum.');
+        return redirect()->route('questions.index');
     }
- 
+
     // daftar soal
     public function questions()
     {

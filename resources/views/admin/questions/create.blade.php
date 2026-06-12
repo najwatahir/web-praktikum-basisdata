@@ -1,11 +1,14 @@
 <x-app-layout>
     <x-slot name="title">Tambah Soal Praktikum</x-slot>
 
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="relative max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
 
-        <div class="mb-6">
+        {{-- Aksen blur latar belakang HMTI Gold --}}
+        <div class="absolute top-0 right-10 w-64 h-64 bg-[#D4A853]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="mb-6 relative z-10">
             <a href="{{ route('admin.questions.index') }}"
-               class="group inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-300 transition-colors duration-200">
+               class="group inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#D4A853] transition-colors duration-200">
                 <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -13,111 +16,149 @@
             </a>
         </div>
 
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold text-white tracking-tight">Buat Soal Baru</h1>
-            <p class="text-gray-400 mt-2">Masukkan detail soal dan konfigurasi test case untuk evaluasi otomatis.</p>
+        <div class="mb-8 relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#D4A853]/10 border border-[#D4A853]/20 text-[#D4A853] text-xs font-bold uppercase tracking-widest mb-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Creator Mode
+            </div>
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500 tracking-tight">Buat Soal Baru</h1>
+            <p class="text-gray-400 mt-2 text-sm">Masukkan detail soal dan konfigurasi test case untuk evaluasi otomatis.</p>
         </div>
 
         @if(session('success'))
-            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium relative z-10 flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
                 {{ session('success') }}
             </div>
         @endif
 
-        <form action="{{ route('admin.questions.store') }}" method="POST" class="space-y-8">
+        <form action="{{ route('admin.questions.store') }}" method="POST" class="space-y-8 relative z-10">
             @csrf
 
-            <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm">
-                <h2 class="text-lg font-semibold text-gray-200 mb-6 border-b border-gray-800 pb-2">Detail Soal</h2>
+            {{-- Detail Soal Card --}}
+            <div class="bg-[#111113] rounded-2xl border border-white/5 p-6 shadow-2xl relative overflow-hidden">
+                {{-- Mac Header Style --}}
+                <div class="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
+                    <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                    <h2 class="ml-2 text-sm font-bold text-gray-400 uppercase tracking-widest">Detail Soal</h2>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Judul Soal</label>
-                        <input type="text" name="judul" required class="w-full bg-[#151518] border border-gray-700 rounded-lg text-white px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Judul Soal</label>
+                        <input type="text" name="judul" required class="w-full bg-[#09090b] border border-white/10 rounded-xl text-white px-4 py-3 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-medium">
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Deskripsi Soal (Markdown / Teks)</label>
-                        <textarea name="deskripsi" rows="4" required class="w-full bg-[#151518] border border-gray-700 rounded-lg text-white px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Deskripsi Soal (Markdown / Teks)</label>
+                        <textarea name="deskripsi" rows="4" required class="w-full bg-[#09090b] border border-white/10 rounded-xl text-gray-300 px-4 py-3 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all leading-relaxed"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Poin Maksimal</label>
-                        <input type="number" name="poin" value="100" required class="w-full bg-[#151518] border border-gray-700 rounded-lg text-white px-4 py-2.5">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Poin Maksimal</label>
+                        <input type="number" name="poin" value="100" required class="w-full bg-[#09090b] border border-white/10 rounded-xl text-white px-4 py-3 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-mono">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Urutan Tampil (No. Soal)</label>
-                        <input type="number" name="urutan" required class="w-full bg-[#151518] border border-gray-700 rounded-lg text-white px-4 py-2.5">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Urutan Tampil (No. Soal)</label>
+                        <input type="number" name="urutan" required class="w-full bg-[#09090b] border border-white/10 rounded-xl text-white px-4 py-3 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-mono">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Batas Waktu (Opsional)</label>
-                        <input type="datetime-local" name="batas_waktu" class="w-full bg-[#151518] border border-gray-700 rounded-lg text-white px-4 py-2.5" style="color-scheme: dark;">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Batas Waktu (Opsional)</label>
+                        <input type="datetime-local" name="batas_waktu" class="w-full bg-[#09090b] border border-white/10 rounded-xl text-gray-300 px-4 py-3 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all" style="color-scheme: dark;">
                     </div>
 
-                    <div class="flex items-center gap-6 pt-8">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="aktif" value="1" checked class="rounded border-gray-700 bg-gray-900 text-indigo-500 focus:ring-indigo-500 h-5 w-5">
-                            <span class="ml-2 text-sm text-gray-300">Status Aktif</span>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-6">
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" name="aktif" value="1" checked class="rounded border-white/20 bg-[#09090b] text-[#D4A853] focus:ring-[#D4A853]/50 h-5 w-5 transition-all">
+                            <span class="ml-3 text-sm font-medium text-gray-400 group-hover:text-gray-200 transition-colors">Status Aktif</span>
                         </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="order_matters" value="1" class="rounded border-gray-700 bg-gray-900 text-indigo-500 focus:ring-indigo-500 h-5 w-5">
-                            <span class="ml-2 text-sm text-gray-300">Wajib ORDER BY?</span>
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" name="order_matters" value="1" class="rounded border-white/20 bg-[#09090b] text-[#D4A853] focus:ring-[#D4A853]/50 h-5 w-5 transition-all">
+                            <span class="ml-3 text-sm font-medium text-gray-400 group-hover:text-gray-200 transition-colors">Wajib ORDER BY?</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-[#111113] rounded-2xl border border-gray-800 p-6 shadow-sm">
-                <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-2">
-                    <h2 class="text-lg font-semibold text-gray-200">Konfigurasi Test Case</h2>
-                    <button type="button" id="btn-add-tc" class="text-sm bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded-lg hover:bg-indigo-500/20 transition">
-                        + Tambah Test Case
+            {{-- Konfigurasi Test Case Card --}}
+            <div class="bg-[#111113] rounded-2xl border border-white/5 p-6 shadow-2xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-white/5 pb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-gray-700"></div>
+                        <h2 class="ml-2 text-sm font-bold text-gray-400 uppercase tracking-widest">Konfigurasi Test Case</h2>
+                    </div>
+                    <button type="button" id="btn-add-tc" class="text-sm font-bold bg-[#D4A853]/10 text-[#D4A853] border border-[#D4A853]/30 px-4 py-2 rounded-xl hover:bg-[#D4A853]/20 hover:border-[#D4A853]/50 transition-all shadow-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Tambah Test Case
                     </button>
                 </div>
 
                 <div id="test-cases-container" class="space-y-6">
-                    <div class="test-case-item border border-gray-700/50 rounded-xl p-5 bg-[#151518] relative">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="test-case-item border border-white/10 rounded-xl p-6 bg-[#09090b] relative shadow-inner group">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Nama Test Case</label>
-                                <input type="text" name="test_cases[0][nama_test_case]" value="Public Normal Case" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Test Case</label>
+                                <input type="text" name="test_cases[0][nama_test_case]" value="Public Normal Case" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Bobot Poin</label>
-                                <input type="number" name="test_cases[0][bobot_poin]" value="30" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Bobot Poin</label>
+                                <input type="number" name="test_cases[0][bobot_poin]" value="30" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-mono">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Tipe (Visibility)</label>
-                                <select name="test_cases[0][is_hidden]" class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Tipe (Visibility)</label>
+                                <select name="test_cases[0][is_hidden]" class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-medium cursor-pointer appearance-none">
                                     <option value="0">Public (Muncul di Test Query)</option>
                                     <option value="1">Hidden (Jebakan / Submit Saja)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Schema SQL (CREATE & INSERT)</label>
-                                <textarea name="test_cases[0][schema_sql]" rows="5" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm font-mono placeholder-gray-600" placeholder="CREATE TABLE ...&#10;INSERT INTO ..."></textarea>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Schema SQL (CREATE & INSERT)</label>
+                                <textarea name="test_cases[0][schema_sql]" rows="6" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-[#D4A853]/80 px-4 py-3 text-[13px] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all leading-relaxed custom-scrollbar" placeholder="CREATE TABLE ...&#10;INSERT INTO ..."></textarea>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Expected Output (Format JSON Array)</label>
-                                <textarea name="test_cases[0][expected_output]" rows="5" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm font-mono placeholder-gray-600" placeholder='[&#10;  {"nama": "Budi", "gaji": "6000000"}&#10;]'></textarea>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Expected Output (Format JSON Array)</label>
+                                <textarea name="test_cases[0][expected_output]" rows="6" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-400 px-4 py-3 text-[13px] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all leading-relaxed custom-scrollbar" placeholder='[&#10;  {"nama": "Budi", "gaji": "6000000"}&#10;]'></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-lg shadow-indigo-500/30">
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6">
+                <a href="{{ route('admin.questions.index') }}" class="bg-[#111113] border border-white/10 hover:bg-white/5 text-gray-300 font-bold py-3.5 px-8 rounded-xl transition-all duration-200 text-center text-sm">Batal</a>
+                <button type="submit" class="bg-[#D4A853] hover:bg-[#9b7c3f] text-black font-bold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(212,168,83,0.3)] hover:shadow-[0_0_25px_rgba(212,168,83,0.5)] hover:-translate-y-0.5 text-center text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     Simpan Soal & Test Case
                 </button>
             </div>
         </form>
     </div>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        .animation-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -127,35 +168,37 @@
 
             btnAdd.addEventListener('click', function() {
                 const html = `
-                    <div class="test-case-item border border-gray-700/50 rounded-xl p-5 bg-[#151518] relative mt-6">
-                        <button type="button" class="btn-hapus absolute -top-3 -right-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-600 transition">✕</button>
+                    <div class="test-case-item border border-white/10 rounded-xl p-6 bg-[#09090b] relative shadow-inner group mt-6 animation-fade-in">
+                        <button type="button" class="btn-hapus absolute -top-3 -right-3 bg-rose-500/20 border border-rose-500/50 text-rose-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-lg opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Nama Test Case</label>
-                                <input type="text" name="test_cases[${tcIndex}][nama_test_case]" value="Hidden Edge Case" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Test Case</label>
+                                <input type="text" name="test_cases[${tcIndex}][nama_test_case]" value="Hidden Edge Case" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Bobot Poin</label>
-                                <input type="number" name="test_cases[${tcIndex}][bobot_poin]" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Bobot Poin</label>
+                                <input type="number" name="test_cases[${tcIndex}][bobot_poin]" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-mono">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Tipe (Visibility)</label>
-                                <select name="test_cases[${tcIndex}][is_hidden]" class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm">
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Tipe (Visibility)</label>
+                                <select name="test_cases[${tcIndex}][is_hidden]" class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-200 px-4 py-2.5 text-sm focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all font-medium cursor-pointer appearance-none">
                                     <option value="1">Hidden (Jebakan / Submit Saja)</option>
                                     <option value="0">Public (Muncul di Test Query)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Schema SQL</label>
-                                <textarea name="test_cases[${tcIndex}][schema_sql]" rows="5" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm font-mono placeholder-gray-600"></textarea>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Schema SQL</label>
+                                <textarea name="test_cases[${tcIndex}][schema_sql]" rows="6" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-[#D4A853]/80 px-4 py-3 text-[13px] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all leading-relaxed custom-scrollbar"></textarea>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Expected Output (JSON)</label>
-                                <textarea name="test_cases[${tcIndex}][expected_output]" rows="5" required class="w-full bg-gray-900 border border-gray-700 rounded-lg text-white px-3 py-2 text-sm font-mono placeholder-gray-600"></textarea>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Expected Output (JSON)</label>
+                                <textarea name="test_cases[${tcIndex}][expected_output]" rows="6" required class="w-full bg-[#111113] border border-white/10 rounded-xl text-gray-400 px-4 py-3 text-[13px] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all leading-relaxed custom-scrollbar"></textarea>
                             </div>
                         </div>
                     </div>
@@ -165,10 +208,14 @@
                 tcIndex++;
             });
 
-            // hapus form test case
+            // hapus form test case dengan animasi
             container.addEventListener('click', function(e) {
-                if(e.target.classList.contains('btn-hapus')) {
-                    e.target.closest('.test-case-item').remove();
+                if(e.target.classList.contains('btn-hapus') || e.target.closest('.btn-hapus')) {
+                    const item = e.target.closest('.test-case-item');
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.98)';
+                    item.style.transition = 'all 0.2s ease-out';
+                    setTimeout(() => item.remove(), 200);
                 }
             });
         });
