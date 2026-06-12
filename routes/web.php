@@ -27,6 +27,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('questions', QuestionController::class);
     Route::get('submissions', [DashboardController::class, 'submissions'])->name('submissions');
     Route::get('rekap', [DashboardController::class, 'rekap'])->name('rekap');
+    Route::get('students', [DashboardController::class, 'students'])->name('students');
     Route::prefix('admin')->name('admin.')->group(function () {
 });
 
