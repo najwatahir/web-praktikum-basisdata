@@ -28,9 +28,11 @@ class DashboardController extends Controller
 
     public function students(Request $request)
 {
+    $kelompoks = \App\Models\Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
+
     $students = \App\Models\Participant::leftJoin('submissions', function($join) {
             $join->on('participants.nim', '=', 'submissions.nim')
-                 ->where('submissions.is_correct', true); // Hanya hitung waktu jawaban yang BENAR
+                 ->where('submissions.is_correct', true); 
         })
         ->select(
             'participants.nim',
@@ -40,7 +42,6 @@ class DashboardController extends Controller
             \DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
             \DB::raw('COUNT(DISTINCT submissions.question_id) as solved'),
             
-            // 1. Ambil waktu submit terakhir yang benar
             \DB::raw('MAX(submissions.created_at) as last_solved_at') 
         )
         ->groupBy(
@@ -49,8 +50,8 @@ class DashboardController extends Controller
             'participants.kelompok',
             'participants.email'
         )
-        ->orderBy('total_score', 'desc') // Peringkat 1: Skor Tertinggi
-        ->orderBy('last_solved_at', 'asc') // Peringkat 2 (Tie-breaker): Siapa yang lebih cepat/duluan!
+        ->orderBy('total_score', 'desc') 
+        ->orderBy('last_solved_at', 'asc') 
         ->orderBy('participants.kelompok', 'asc')
         ->paginate(50);
 
