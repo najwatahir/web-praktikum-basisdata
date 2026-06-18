@@ -59,7 +59,7 @@
                             class="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#09090b] border border-white/10 rounded-xl text-sm text-gray-200 focus:ring-1 focus:ring-[#D4A853]/50 focus:border-[#D4A853]/50 transition-all cursor-pointer font-medium shadow-sm hover:bg-white/[0.02]">
                         <option value="" class="bg-[#111113]">Semua Kelompok</option>
                         @foreach($kelompoks as $k)
-                            <option value="{{ $k }}" {{ request('kelompok') == $k ? 'selected' : '' }} class="bg-[#111113]">
+                            <option value="{{ $k }}" {{ (string)request('kelompok') === (string)$k ? 'selected' : '' }} class="bg-[#111113]">
                                 Kelompok {{ str_pad($k, 2, '0', STR_PAD_LEFT) }}
                             </option>
                         @endforeach
