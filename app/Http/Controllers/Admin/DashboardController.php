@@ -27,36 +27,48 @@ class DashboardController extends Controller
     }
 
     public function students(Request $request)
-{
-    $kelompoks = \App\Models\Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
+    {
+        $kelompoks = \App\Models\Participant::distinct()->orderBy('kelompok')->pluck('kelompok');
 
-    $students = \App\Models\Participant::leftJoin('submissions', function($join) {
-            $join->on('participants.nim', '=', 'submissions.nim')
-                 ->where('submissions.is_correct', true); 
-        })
-        ->select(
-            'participants.nim',
-            'participants.nama',
-            'participants.kelompok',
-            'participants.email',
-            \DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
-            \DB::raw('COUNT(DISTINCT submissions.question_id) as solved'),
-            
-            \DB::raw('MAX(submissions.created_at) as last_solved_at') 
-        )
-        ->groupBy(
-            'participants.nim', 
-            'participants.nama', 
-            'participants.kelompok',
-            'participants.email'
-        )
-        ->orderBy('total_score', 'desc') 
-        ->orderBy('last_solved_at', 'asc') 
-        ->orderBy('participants.kelompok', 'asc')
-        ->paginate(50);
+        $query = \App\Models\Participant::leftJoin('submissions', function($join) {
+                $join->on('participants.nim', '=', 'submissions.nim')
+                     ->where('submissions.is_correct', true); 
+            })
+            ->select(
+                'participants.nim',
+                'participants.nama',
+                'participants.kelompok',
+                'participants.email',
+                \DB::raw('COALESCE(SUM(submissions.score), 0) as total_score'),
+                \DB::raw('COUNT(DISTINCT submissions.question_id) as solved'),
+                \DB::raw('MAX(submissions.created_at) as last_solved_at') 
+            )
+            ->groupBy(
+                'participants.nim', 
+                'participants.nama', 
+                'participants.kelompok',
+                'participants.email'
+            );
 
-    return view('admin.students.index', compact('students', 'kelompoks'));
-}
+        if ($request->filled('kelompok')) {
+            $query->where('participants.kelompok', $request->input('kelompok'));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('participants.nama', 'like', "%{$search}%")
+                  ->orWhere('participants.nim', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->orderBy('total_score', 'desc') 
+            ->orderBy('last_solved_at', 'asc') 
+            ->orderBy('participants.kelompok', 'asc')
+            ->paginate(50);
+
+        return view('admin.students.index', compact('students', 'kelompoks'));
+    }
 
     public function rekap(Request $request)
     {
@@ -78,7 +90,7 @@ class DashboardController extends Controller
             ->orderBy('participants.kelompok')
             ->orderByDesc('total_score');
 
-        if ($kelompok) {
+        if ($kelompok !== null && $kelompok !== '') {
             $query->where('participants.kelompok', $kelompok);
         }
 
@@ -116,11 +128,11 @@ class DashboardController extends Controller
             ->select('submissions.*')
             ->orderByDesc('submissions.created_at');
 
-        if ($kelompok) {
+        if ($kelompok !== null && $kelompok !== '') {
             $query->where('participants.kelompok', $kelompok);
         }
 
-        if ($questionId) {
+        if ($questionId !== null && $questionId !== '') {
             $query->where('submissions.question_id', $questionId);
         }
 
