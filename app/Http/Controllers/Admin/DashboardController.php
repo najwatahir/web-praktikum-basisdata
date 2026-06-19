@@ -144,4 +144,49 @@ class DashboardController extends Controller
             'submissions', 'kelompoks', 'questions', 'kelompok', 'questionId'
         ));
     }
+
+    public function exportFirstAttempt(Request $request)
+    {
+        $submissions = Submission::with(['participant', 'question'])
+            ->where('attempt', 1)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $filename = "submissions_first_attempt_" . date('Y-m-d_H-i-s') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['Timestamp', 'NIM', 'Nama', 'Kelompok', 'Soal ID', 'Judul Soal', 'Query', 'Attempt', 'Is Correct', 'Score'];
+
+        $callback = function() use($submissions, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($submissions as $sub) {
+                $row = [
+                    $sub->created_at,
+                    $sub->participant->nim ?? '-',
+                    $sub->participant->nama ?? '-',
+                    $sub->participant->kelompok ?? '-',
+                    $sub->question_id,
+                    $sub->question->judul ?? '-',
+                    $sub->query,
+                    $sub->attempt,
+                    $sub->is_correct ? 'Yes' : 'No',
+                    $sub->score
+                ];
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

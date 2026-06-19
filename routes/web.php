@@ -34,6 +34,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('questions', QuestionController::class);
     Route::get('submissions', [DashboardController::class, 'submissions'])->name('submissions');
+    Route::get('submissions/export-first-attempt', [DashboardController::class, 'exportFirstAttempt'])->name('submissions.export-first-attempt');
     Route::get('rekap', [DashboardController::class, 'rekap'])->name('rekap');
     Route::get('students', [DashboardController::class, 'students'])->name('students');
     Route::prefix('admin')->name('admin.')->group(function () {

@@ -84,6 +84,11 @@
                             Reset
                         </a>
                     @endif
+                    
+                    <a href="{{ route('admin.submissions.export-first-attempt') }}" class="flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all duration-200 font-medium" title="Export to CSV (Excel compatible)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Export 1st Attempt (CSV)
+                    </a>
                 </div>
             </form>
         </div>
