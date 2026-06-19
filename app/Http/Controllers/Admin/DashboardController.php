@@ -147,10 +147,24 @@ class DashboardController extends Controller
 
     public function exportFirstAttempt(Request $request)
     {
-        $submissions = Submission::with(['participant', 'question'])
-            ->where('attempt', 1)
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $kelompok   = $request->input('kelompok');
+        $questionId = $request->input('question_id');
+
+        $query = Submission::with(['participant', 'question'])
+            ->join('participants', 'submissions.nim', '=', 'participants.nim')
+            ->select('submissions.*')
+            ->where('submissions.attempt', 1)
+            ->orderBy('submissions.created_at', 'asc');
+
+        if ($kelompok !== null && $kelompok !== '') {
+            $query->where('participants.kelompok', $kelompok);
+        }
+
+        if ($questionId !== null && $questionId !== '') {
+            $query->where('submissions.question_id', $questionId);
+        }
+
+        $submissions = $query->get();
 
         $filename = "submissions_first_attempt_" . date('Y-m-d_H-i-s') . ".csv";
 
